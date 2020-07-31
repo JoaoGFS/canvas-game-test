@@ -33,12 +33,6 @@ let purpleTiles = []
 let deadlyTilesStrings = []
 let fruitsTilesStrings = []
 
-let xStart = 31 * TILE_LENGTH
-let yStart = canvas.height - player.height
-
-player.xPosition = xStart
-player.yPosition = yStart
-
 keys = []
 
 let oldSpeed = 0
@@ -75,13 +69,18 @@ function update() {
             if (score > highScore) {
                 highScore = score
             }
-            resetLevel()
+            player.xSpeed = 0
+            player.ySpeed = 0
+            stopGame = true
         }
     }
 
     if (isOutOfBounds() || tileInContact() == 0) {
         score = 0
-        resetLevel()
+
+        player.xSpeed = 0
+        player.ySpeed = 0
+        stopGame = true
     }
 
     context2d.clearRect(0, 0, canvas.width, canvas.height)
@@ -110,11 +109,16 @@ function initEnviroment() {
 function handleControls() {
     let moveSpeed = 5
 
-    if (stopGame && !keys[32]) {
-        debugLog("Press space to retry")
-        return
-    } else {
-        stopGame = false
+    if (stopGame) {
+        if (keys[32]) {
+            console.log("space")
+            debugLog("Use the arrows to start")
+            resetLevel()
+            stopGame = false
+        } else {
+            debugLog("Press space to retry")
+            return
+        }
     }
 
     if (keys[90]) {
@@ -169,7 +173,7 @@ function drawPlayer() {
     // runs the loop each time
     requestAnimationFrame(update);
 
-    drawGrid()
+    // drawGrid()
 
     context2d.fillStyle = "red"
     context2d.fillRect(player.xPosition, player.yPosition, player.width, player.height)
@@ -178,9 +182,6 @@ function drawPlayer() {
 
 function resetLevel() {
     console.log(`Last tiles (${player.xTile}, ${player.yTile})`)
-
-    player.xPosition = xStart
-    player.yPosition = yStart
 
     player.xSpeed = 0
     player.ySpeed = 0
@@ -197,6 +198,14 @@ function resetLevel() {
     fruitCounter = 0
 
     initEnviroment()
+}
+
+function pauseGame() {
+    while (!keys[32]) {
+
+    }
+
+    return
 }
 
 function drawGrid() {
@@ -337,10 +346,10 @@ function debugLog(params) {
 }
 
 function setStats() {
-    document.getElementById("coords").innerHTML =
-        `xPosition: ${player.xPosition}; yPosition: ${player.yPosition}
-    <br> xTile: ${Math.floor(player.xTile)}; yTile: ${Math.floor(player.yTile)} 
-    <br>xSpeed: ${player.xSpeed}; ySpeed: ${player.ySpeed}`
+    // document.getElementById("coords").innerHTML =
+    // `xPosition: ${player.xPosition}; yPosition: ${player.yPosition}
+    // <br> xTile: ${Math.floor(player.xTile)}; yTile: ${Math.floor(player.yTile)} 
+    // <br>xSpeed: ${player.xSpeed}; ySpeed: ${player.ySpeed}`
     document.getElementById("counter").innerHTML = `${fruitCounter} fruits`
     document.getElementById("score").innerHTML = `score: ${score}`
     document.getElementById("high").innerHTML = `high score: ${highScore}`
